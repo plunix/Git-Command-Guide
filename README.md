@@ -471,3 +471,86 @@ This will remove all local untracked files, so only git tracked files remain:
 
 git clean -fdx
 WARNING: -x will also remove all ignored files!
+
+
+But then after a while things started to get complicated. I had to work with submodules, change the remote URL, and handle untracked files. That is when I decided to move out of my comfort zone in Visual Studio and into the Git CLI.
+The Git CLI is not easily remembered and everything can be done in more than one way so I started my own compilation of useful commands. Below is the result of that compilation. I hope it can be useful for those of you going through the same process and please let me know if you have any Git gems of your own that belong on the list.
+The list
+In no specific order whatsoever.
+Edit configuration
+On Windows the Git configuration file is usually placed under “c:\Users[user]”. You can also start an editor from the command prompt.
+git config --global -e
+Set editor for commit messages
+To change the default editor for commit messages to Notepad++, add a [core] section to the config file looking like this.
+[core]
+    editor = 'C:/put-your-folder-here/Notepad++/notepad++.exe' -multiInst -notabbar
+From now on Notepad++ will open when ever you run git commit without the -m switch.
+Set merge tool to Visual Studio
+[diff]
+    tool = vsdiffmerge
+[difftool]
+    prompt = true
+[difftool "vsdiffmerge"]
+    cmd = \"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Professional\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer\\vsDiffMerge.exe\" \"$LOCAL\" \"$REMOTE\" //t
+    keepbackup = false
+    trustexistcode = true
+[merge]
+    tool = vsdiffmerge
+[mergetool]
+    prompt = true
+[mergetool "vsdiffmerge"]
+    cmd = \"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Professional\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer\\vsDiffMerge.exe\" \"$REMOTE\" \"$LOCAL\" \"$BASE\" \"$MERGED\" //m
+    keepbackup = false
+    trustexistcode = true
+Submodules
+Cloning submodules
+If the repo contains submodules, and you want to bring the code in the submodules down, you’ll need to clone recursively.
+git clone --recursive https://github.com/hocuspocus/icsharp.git
+Change submodule to own fork
+If you have cloned a repo with a submodule and you want to change the submodule to a different fork (if for example you have forked the submodule), you need to edit the URL in the file .gitsubmodule.
+[submodule "Engine"]
+    path = Engine
+    url = https://github.com/scriptcs/scriptcs.git
+After saving .gitsubmodule, run the command.
+git submodule sync
+It seems that this may detach from HEAD, so a checkout may be necessary (before making any local changes).
+git checkout
+If you have trouble downloading the code for the submodule, try running the command:
+git submodule update --remote
+Start merge tool
+If there is a merge tool, you can start your merge tool (set in the config file).
+git mergetool
+Compare to remote
+Start by fetching all from the remote repo:
+git fetch origin
+Then compare with local:
+git log HEAD..origin/master --oneline
+If you are happy with the results, you may merge the remote changes with the local repo:
+git merge
+Show remote URL
+Show remote URL for “origin”:
+git remote get-url origin
+For a bit more information you may use:
+git remote show origin
+I your remote has moved, you can change the URL using set-url:
+git remote set-url origin https://hocuspocus@bitbucket.org/myteam/myproject.git
+Delete branch
+Delete the remote branch:
+git push -d <remote_name> <branch_name>
+For example:
+git push -d origin my-feature-branch
+You may also use:
+git push <remote_name> :<branch_name>
+Delete the local branch:
+git branch -d <branch_name>
+Delete local changes
+Undo all unstaged local changes:
+git checkout .
+Undo git add for at single file:
+git reset folder/file.cs
+Undo git add . :
+git reset .
+Fix untracked files
+git rm . -r --cached
+git add .
+git commit -m "Fixed untracked files"
