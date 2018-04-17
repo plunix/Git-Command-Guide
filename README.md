@@ -554,3 +554,10 @@ Fix untracked files
 git rm . -r --cached
 git add .
 git commit -m "Fixed untracked files"
+
+### git merge two repository
+cd path/to/project-b
+git remote add project-a path/to/project-a
+git fetch project-a
+git merge --allow-unrelated-histories project-a/master # or whichever branch you want to merge
+git remote remove project-a
