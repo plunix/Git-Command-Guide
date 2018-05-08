@@ -1,4 +1,4 @@
-# Git Command Guide
+# Git Command Guide 2
 
 <h1 align="center">
 	<br>
